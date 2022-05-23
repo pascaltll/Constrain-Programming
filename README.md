@@ -15,4 +15,5 @@ Maximum Density Still Life Problem is in fact well behaved mathematically for su
 large n (around n > 200) and if such very large instances can be solved, then there exist
 ways to construct provably optimal solutions for all n from a finite set of base solutions.
 Thus we show that the Maximum Density Still Life Problem has a closed form solution and
-does not require exponential time to solve
+does not require exponential time to solve.
+### ![plot](imagen/im_1.png)
