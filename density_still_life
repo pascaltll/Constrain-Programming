@@ -1,0 +1,39 @@
+include "globals.mzn";
+int: size = 9; % size of grid
+ 
+array[0..size + 3, 0..size + 3] of var 0..1: grid; %cause 3 (2)-size-(2) 2 space of deadcells(barrera)
+ 
+var int: z = sum(r in 2..size + 1, c in 2..size + 1) (grid[r, c]);
+
+  
+constraint forall(x in 0..size + 3) (
+    grid[0, x] = 0 /\ grid[1, x] = 0 
+    /\
+    grid[size + 2, x] = 0 /\ grid[size + 3, x] = 0 
+    /\
+    grid[x, 0] == 0 /\ grid[x, 1] == 0 
+    /\
+    grid[x, size + 2] = 0 /\ grid[x, size + 3] = 0);
+
+    
+constraint forall(row in 1..size + 2, col in 1..size + 2) (
+( ( (sum(i, j in -1..1)(grid[row + i ,col + j]) - grid[row, col] ) = 3) -> (grid[row, col] = 1) ) );
+
+constraint forall(row in 1..size + 2, col in 1..size + 2) ( 
+(grid[row,col] = 1) -> ( 2 <= (sum(i, j in -1..1)(grid[row + i ,col + j]) - grid[row, col]) 
+/\ (sum(i, j in -1..1)(grid[row + i ,col + j]) - grid[row, col]) <= 3 ) );
+
+
+ %Symmetry-breaking by selective ordering 
+ % - if the up-left-corner cell is dead, the down rigt-corner cell must be dead too
+ % - if the up right cell is dead, the down left-corner cell must be dead too
+constraint grid[2, 2] >= grid[size + 1,size + 1] /\ grid[2,size + 1] >= grid[size + 1, 2];
+ 
+ % solve maximize z;
+%solve :: int_search( [grid[i,j] | i,j in 0..size+3], smallest, indomain_max, complete) maximize z;
+solve :: int_search( [grid[i,j] | i,j in 0..size+3], smallest, indomain_min, complete) maximize z;    
+
+%solve :: int_search( [grid[i,j] | i,j in 0..size+3], input_order, indomain_min, complete) maximize z;    
+%output [ if j = 0 then " \n" else "  " endif ++ show(grid[i,j])  | i,j in 0..size+3];
+ 
+output [ if j = 0 then "\n" else " " endif ++ if fix(grid[i,j]) = 1 then "▩" else "▢" endif  | i,j in 0..size+3];
